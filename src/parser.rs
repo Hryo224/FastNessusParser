@@ -16,7 +16,8 @@ pub fn parse_nessus_arrow(path: &str) -> Result<Vec<RecordBatch>> {
     let file: File = File::open(path).with_context(|| format!("Failed to open {}", path))?;
     let mmap: memmap2::Mmap = unsafe { MmapOptions::new().map(&file)? };
 
-    let host_ranges: Vec<(usize, usize)> = find_host_ranges(&mmap).context("Failed to index Nessus XML")?;
+    let host_ranges: Vec<(usize, usize)> =
+        find_host_ranges(&mmap).context("Failed to index Nessus XML")?;
 
     let batches: Vec<RecordBatch> = host_ranges
         .par_chunks(CHUNK_SIZE)
@@ -25,15 +26,16 @@ pub fn parse_nessus_arrow(path: &str) -> Result<Vec<RecordBatch>> {
 
             for &(start, end) in chunk_ranges {
                 let slice: &[u8] = &mmap[start..end];
-                
+
                 let host: ReportHost = quick_xml::de::from_reader(slice)?;
                 let h_ctx: HostContext = HostContext::from_report_host(&host);
-                
+
                 let h_derived: HostDerived = HostDerived::analyze(&h_ctx);
 
                 for item in &host.items {
-                    let d_derived: DerivedContext = DerivedContext::calculate(&h_ctx, &h_derived, item);
-                    
+                    let d_derived: DerivedContext =
+                        DerivedContext::calculate(&h_ctx, &h_derived, item);
+
                     builder.append(&h_ctx, &h_derived, item, &d_derived);
                 }
             }

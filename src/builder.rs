@@ -10,7 +10,7 @@ use crate::transform::{DerivedContext, HostDerived};
 macro_rules! def_builder {
     (
         $(
-            $name:ident : $b_type:ident [ $dt:expr ] 
+            $name:ident : $b_type:ident [ $dt:expr ]
             { nullable: $null:literal, cap: $cap:expr }
         ),* $(,)?
     ) => {
@@ -36,12 +36,12 @@ macro_rules! def_builder {
         }
     };
 
-    (@init StringBuilder, $c:ident, $mult:expr) => { 
-        StringBuilder::with_capacity($c, $c * $mult) 
+    (@init StringBuilder, $c:ident, $mult:expr) => {
+        StringBuilder::with_capacity($c, $c * $mult)
     };
 
-    (@init $t:ident, $c:ident, $mult:expr) => { 
-        <$t>::with_capacity($c) 
+    (@init $t:ident, $c:ident, $mult:expr) => {
+        <$t>::with_capacity($c)
     };
 }
 
@@ -152,7 +152,13 @@ def_builder! {
 }
 
 impl NessusArrowBuilder {
-    pub fn append(&mut self, h: &HostContext, hd: &HostDerived, i: &ReportItem, d: &DerivedContext) {
+    pub fn append(
+        &mut self,
+        h: &HostContext,
+        hd: &HostDerived,
+        i: &ReportItem,
+        d: &DerivedContext,
+    ) {
         self.host_name.append_value(&h.name);
         self.host_ip.append_option(h.ip.as_ref());
         self.host_os.append_option(h.os.as_ref());
@@ -192,12 +198,36 @@ impl NessusArrowBuilder {
         self.cvss3_imp.append_option(i.cvss3_impact_score);
         self.vpr.append_option(i.vpr_score);
 
-        if i.cve.is_empty() { self.cve.append_null(); } else { self.cve.append_value(i.cve.join(",")); }
-        if i.cpe.is_empty() { self.cpe.append_null(); } else { self.cpe.append_value(i.cpe.join(",")); }
-        if i.bid.is_empty() { self.bid.append_null(); } else { self.bid.append_value(i.bid.join(",")); }
-        if i.xref.is_empty() { self.xref.append_null(); } else { self.xref.append_value(i.xref.join(",")); }
-        if i.iava.is_empty() { self.iava.append_null(); } else { self.iava.append_value(i.iava.join(",")); }
-        if i.see_also.is_empty() { self.see_also.append_null(); } else { self.see_also.append_value(i.see_also.join(",")); }
+        if i.cve.is_empty() {
+            self.cve.append_null();
+        } else {
+            self.cve.append_value(i.cve.join(","));
+        }
+        if i.cpe.is_empty() {
+            self.cpe.append_null();
+        } else {
+            self.cpe.append_value(i.cpe.join(","));
+        }
+        if i.bid.is_empty() {
+            self.bid.append_null();
+        } else {
+            self.bid.append_value(i.bid.join(","));
+        }
+        if i.xref.is_empty() {
+            self.xref.append_null();
+        } else {
+            self.xref.append_value(i.xref.join(","));
+        }
+        if i.iava.is_empty() {
+            self.iava.append_null();
+        } else {
+            self.iava.append_value(i.iava.join(","));
+        }
+        if i.see_also.is_empty() {
+            self.see_also.append_null();
+        } else {
+            self.see_also.append_value(i.see_also.join(","));
+        }
 
         self.unsupported.append_value(i.unsupported_by_vendor);
         self.def_acct.append_value(i.default_account);
@@ -209,14 +239,18 @@ impl NessusArrowBuilder {
         self.nessus_exp.append_value(i.exploited_by_nessus);
         self.metasploit.append_value(!i.metasploit_name.is_empty());
         self.canvas.append_value(!i.canvas_package.is_empty());
-        self.core_impact.append_value(!i.core_impact_name.is_empty());
+        self.core_impact
+            .append_value(!i.core_impact_name.is_empty());
 
-        self.exploit_ease.append_option(i.exploitability_ease.as_deref());
+        self.exploit_ease
+            .append_option(i.exploitability_ease.as_deref());
         self.comp_check.append_option(i.comp_check_name.as_deref());
         self.comp_id.append_option(i.comp_check_id.as_deref());
         self.comp_res.append_option(i.comp_result.as_deref());
-        self.comp_actual.append_option(i.comp_actual_value.as_deref());
-        self.comp_policy.append_option(i.comp_policy_value.as_deref());
+        self.comp_actual
+            .append_option(i.comp_actual_value.as_deref());
+        self.comp_policy
+            .append_option(i.comp_policy_value.as_deref());
         self.comp_info.append_option(i.comp_info.as_deref());
         self.comp_sol.append_option(i.comp_solution.as_deref());
         self.comp_ref.append_option(i.comp_reference.as_deref());

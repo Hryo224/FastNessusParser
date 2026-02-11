@@ -30,17 +30,15 @@ impl NessusParser {
         })?;
 
         if batches.is_empty() {
-             return Ok(py.None());
+            return Ok(py.None());
         }
 
         let pyarrow: Bound<'_, PyModule> = py.import_bound("pyarrow")?;
         let table_class: Bound<'_, PyAny> = pyarrow.getattr("Table")?;
 
-        let py_batches: Result<Vec<PyObject>, _> = batches
-            .iter()
-            .map(|rb| rb.to_pyarrow(py))
-            .collect();
-        
+        let py_batches: Result<Vec<PyObject>, _> =
+            batches.iter().map(|rb| rb.to_pyarrow(py)).collect();
+
         let batch_list: Bound<'_, PyList> = PyList::new_bound(py, py_batches?);
         let args: Bound<'_, PyTuple> = PyTuple::new_bound(py, &[batch_list]);
         let table: Bound<'_, PyAny> = table_class.call_method1("from_batches", args)?;
