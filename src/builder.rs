@@ -139,7 +139,6 @@ def_builder! {
     priv_req:      BooleanBuilder [DataType::Boolean] { nullable: false, cap: 0 },
     user_int:      BooleanBuilder [DataType::Boolean] { nullable: false, cap: 0 },
 
-    // --- Regex ---
     ssl_exp:   StringBuilder [DataType::Utf8] { nullable: true, cap: 20 },
     ssl_days:  Int64Builder  [DataType::Int64] { nullable: true, cap: 0 },
     java_ver:  StringBuilder [DataType::Utf8] { nullable: true, cap: 10 },
